@@ -62,10 +62,34 @@ class Config_check:
             end = len(self.suspicious_config)
             return True if end == ini else False
     
+    #2019-10-16 append
+    #Based on https://goyalankit.com/blog/promiscuous-mode-detection
+    def promiscuous_mode_check(self):
+        ini = len(self.suspicious_config)
+        __dirname = "/sys/devices/"
+
+        #get all in dict
+        __result = []
+        for maindir,subdir,file_name_list in os.walk(__dirname):
+            for filename in file_name_list:
+                __result.append(os.path.join(maindir,filename))
+        
+        #check filepath with /net/ and flags
+        for name in __result:
+            if ("/net/" in name) and ("flags" in name):
+                with open(name, "r") as f:
+                    contents = f.read().strip("\n")
+                    if contents == "0x1303":
+                        self.suspicious_config.append([name, 'Promiscuous mode'])
+        
+        end = len(self.suspicious_config)
+        return True if end == ini else False
+
     def run(self):
         print(u'\n\033[1;33m%s\033[0m' % self.name)
         print(u'  %s%s' % (align("[1]DNS check"),printf(self.dns_check())))
-        print(u'  %s%s' % (align("[2]iptables check"),printf(self.iptables_check())))
-        print(u'  %s%s' % (align("[3]host check"),printf(self.host_check())))
+        print(u'  %s%s' % (align("[2]Iptables check"),printf(self.iptables_check())))
+        print(u'  %s%s' % (align("[3]Host check"),printf(self.host_check())))
+        print(u'  %s%s' % (align("[3]Promiscuous check"), printf(self.promiscuous_mode_check())))
         for detail in self.suspicious_config:
             print(u'    [*]File:%s[*]Detail:%s' %(align(detail[0]), detail[1]))

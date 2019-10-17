@@ -1,6 +1,8 @@
 # Emergency Alert Script
 
-> This script is my production of learning [Gscan](https://github.com/grayddq/GScan). GScan is a great tool to both learn and  do emergency check.
+> 这是一款linux下的简单应急响应脚本。这是我在学习GScan之后的学习成果，GScan是一个不论在学习和应急响应上都很好的工具。
+
+> This Script is use for check linux emergency security check.This script is my production of learning [Gscan](https://github.com/grayddq/GScan). GScan is a great tool to both learn and do emergency check.
 
 ## Author
 
@@ -30,8 +32,8 @@ python3 main.py
 |Inted|
 |Xinetd|
 |Setuid|
-|Chmod_777|
-|Startup_check|
+|Chmod 777(Useless maybe?)|
+|Startup check|
 |Alias|
 
 > Configuration
@@ -41,6 +43,7 @@ python3 main.py
 |Dns check|
 |Iptables check|
 |Host check|
+|Promiscuous check|
 
 > History Check
 
@@ -83,7 +86,7 @@ python3 main.py
 
 ## Difference
 
-- Pure python，No Linux command used
+- Pure python3,No Linux command used
 - some differences between file check
 - delete some plugins
 
@@ -91,3 +94,8 @@ python3 main.py
 
 - rebuild the framework(It's really silly...)
 - support ALL linux(Now only centos)
+
+## Some error
+
+- Script will be killed if too many files in your service(OOM killer)，I'll learn and try to figure out an better way.
+- Some module will warn you, but it's nothing(setuid check for example).

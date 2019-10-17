@@ -28,7 +28,7 @@ class UTmpRecord(collections.namedtuple('UTmpRecord',
 
 STRUCT = struct.Struct('hi32s4s32s256shhiii4i20s')
 
-def read(buf):
+def readlog(buf):
     def convert_string(val):
         if isinstance(val, bytes):
             return val.rstrip(b'\0').decode()

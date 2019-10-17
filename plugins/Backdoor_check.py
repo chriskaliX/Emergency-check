@@ -400,7 +400,8 @@ class Backdoor_check:
                 line = next(lines)
                 for i in email_valid(line):
                     if ((i[-12:] == '@openssh.com') or (i == "rijndael-cbc@lysator.liu.se")):continue
-                    if ((i[-11:]=='@libssh.org')):continue
+                    if (i[-11:] == '@libssh.org'):continue
+                    if ('@tinyssh.org' in i):continue
                     self.suspicious_backdoor.append(["/usr/sbin/sshd", ''.join(i)])
                 for i in ip_valid(line):
                     if (re.match('^(127\\.0\\.0\\.1)|(localhost)|(0.0.0.0)|(10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})|(172\\.((1[6-9])|(2\\d)|(3[01]))\\.\\d{1,3}\\.\\d{1,3})|(192\\.168\\.\\d{1,3}\\.\\d{1,3})$',i)):continue
@@ -468,18 +469,18 @@ class Backdoor_check:
         print(u'  %s%s' % (align("[3]LD_ELF_PRELOAD check"),printf(self.LD_ELF_PRELOAD_check())))
         print(u'  %s%s' % (align("[4]LD_LIBRARY_PATH check"),printf(self.LD_LIBRARY_PATH_check())))
         print(u'  %s%s' % (align("[5]PROMPT_COMMAND check"),printf(self.PROMPT_COMMAND_check())))
-        print(u'  %s%s' % (align("[6]export check"),printf(self.export_check())))
+        print(u'  %s%s' % (align("[6]Export check"),printf(self.export_check())))
         print(u'  %s%s' % (align("[7]LD_SO_PRELOAD check"),printf(self.ld_so_preload())))
-        print(u'  %s%s' % (align("[8]cron check"),printf(self.cron_check())))
+        print(u'  %s%s' % (align("[8]Cron check"),printf(self.cron_check())))
         print(u'  %s%s' % (align("[9]SSH backdoor check"),printf(self.SSH_check())))
         print(u'  %s%s' % (align("[10]SSH wrapper check"),printf(self.SSH_wrapper_check())))
-        print(u'  %s%s' % (align("[11]inted check"), printf(self.inted_check())))
-        print(u'  %s%s' % (align("[12]xinted check"),printf(self.xinetd_check())))
-        print(u'  %s%s' % (align("[13]setuid check"),printf(self.setuid_check())))
-        print(u'  %s%s' % (align("[14]startup check"),printf(self.startup_check())))
-        print(u'  %s%s' % (align("[15]alias check"),printf(self.alias_check())))
-        print(u'  %s%s' % (align("[16]openssh check"),printf(self.openssh_check())))
-        print(u'  %s%s' % (align("[17]fstab check"),printf(self.fstab_check())))
-        print(u'  %s%s' % (align("[18]setgid check"),printf(self.setgid_check())))
+        print(u'  %s%s' % (align("[11]Inted check"), printf(self.inted_check())))
+        print(u'  %s%s' % (align("[12]Xinted check"),printf(self.xinetd_check())))
+        print(u'  %s%s' % (align("[13]Setuid check"),printf(self.setuid_check())))
+        print(u'  %s%s' % (align("[14]Startup check"),printf(self.startup_check())))
+        print(u'  %s%s' % (align("[15]Alias check"),printf(self.alias_check())))
+        print(u'  %s%s' % (align("[16]Openssh check"),printf(self.openssh_check())))
+        print(u'  %s%s' % (align("[17]Fstab check"),printf(self.fstab_check())))
+        print(u'  %s%s' % (align("[18]Setgid check"),printf(self.setgid_check())))
         for detail in self.suspicious_backdoor:
             print(u'    [*]File:%s[*]Detail:%s'%(align(detail[0]),detail[1]))

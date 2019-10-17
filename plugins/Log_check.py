@@ -1,7 +1,7 @@
 from plugins.common.common import printf, strings, align
 from package.lastlog import lastlog
 import os,re,datetime
-from package.utmp import read
+from package.utmp import readlog, UTmpRecordType
 
 #How to warm this
 class Log_check:
@@ -19,7 +19,7 @@ class Log_check:
             ini = len(self.suspicious_log)
             with open('/var/log/wtmp', 'rb') as fd:
                 buf = fd.read()
-                for entry in read(buf):
+                for entry in readlog(buf):
                     if re.match(self.ip_regex,entry.host):
                         #I don't check the internal ip,But u can change this
                         if re.match(self.ip_internal, entry.host):continue
@@ -40,14 +40,19 @@ class Log_check:
             return True
     
     #When more than one online, warn
+    #
+    #2019-10-16
+    #Wipe out the result of other UTmpRecordType
+    #But it still shows the inter ip address
+
     def utmp_check(self):
         if os.path.exists("/var/run/utmp"):
             login_list = {}
             ini = len(self.suspicious_log)
             with open("/var/run/utmp","rb") as fd:
                 buf = fd.read()
-                for entry in read(buf):
-                    if re.match(self.ip_regex, entry.host):
+                for entry in readlog(buf):
+                    if re.match(self.ip_regex, entry.host) and (entry.type == UTmpRecordType.user_process):
                         identity = (entry.host, entry.user)
                         if (identity in login_list):
                             if (entry.sec) > (login_list[identity]):
@@ -59,7 +64,8 @@ class Log_check:
                 return True
             for key, value in login_list.items():
                     value = datetime.datetime.utcfromtimestamp(int(value)).strftime("%Y-%m-%d %H:%M:%S")
-                    self.suspicious_log.append(["/var/log/utmp", "%s" % align(",".join(key), width=30)])
+                    self.suspicious_log.append(
+                        ["/var/log/utmp", "User,addr:%sTime:%s" % (align(",".join(key), width=30),value)])
             end = len(self.suspicious_log)
             return True if ini == end else False
         else:
