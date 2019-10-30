@@ -161,6 +161,7 @@ class Backdoor_check:
         except:
             return True
     
+    # Check counts of ssh connection (which I think is coincide?)
     def SSH_check(self):
         ini = len(self.suspicious_backdoor)
         def trans(content):
@@ -215,6 +216,18 @@ class Backdoor_check:
         except:
             return True
     
+    def SSH_softlink(self):
+        ini = len(self.suspicious_backdoor)
+        try:
+            if os.path.islink("/usr/sbin/sshd"):
+                return True
+            else:
+                self.suspicious_backdoor.append(["/usr/sbin/sshd","softlink"])
+                return False
+        except:
+            return True
+
+    # Check ssh wrapper
     def SSH_wrapper_check(self):
         def ELF_check(path): 
             data = open(path, "rb").read(8).hex()
@@ -457,10 +470,60 @@ class Backdoor_check:
         end = len(self.suspicious_backdoor)
         return True if end == ini else False
 
-    ## pam
-    ## unknow -> check version? check time? Or Online check
+    # PAM check(not good)
     def pam(self):
-        pass
+        ini = len(self.suspicious_backdoor)
+
+        # Check the /etc/ssh/sshd_config file, if PAM is enabled, it should be suspicious
+        # Because it default off on my server...(So it maybe wrong sometime)
+
+        if os.path.exists("/etc/ssh/sshd_config"):
+            with open("/etc/ssh/sshd_config","r") as f:
+                for line in f.readlines():
+                    if line.startswith("#"):
+                        continue
+                    if ("UsePAM" in line.strip("\n")) and ("yes" in line.strip("\n")):
+                        self.suspicious_backdoor.append(
+                            ["/etc/ssh/sshd_config", "PAM enabled"])
+        
+        #
+        # In PAM, file maybe replace with a malicious one, my first thought was to compare
+        # all md5 hashes, but find out hashes of all versions and platforms maybe a little
+        # bit tricky for me. So if u got an better idea, please leave it in issue, thanks!
+        # 
+
+        #
+        # Now the paper that I read. I write this one for check. It's silly, but still a
+        # kind of check.( :( better than nothing )
+        # 
+
+        # pam_list = ["/etc/pam.d/sshd", "/etc/pam.d/sudo","/etc/pam.d/su","/etc/pam.d/passwd"]
+        # so_file_list = list
+        # for pamfile in pam_list:
+        #     if not os.path.exists(pamfile):continue
+
+        #     # Open all pam file, and find out the pam .. so file. Check the date they changed
+        #     # ...I know it maybe some stupid, I'll try to figure out a better approach. 
+        #     with open(pamfile,"r") as f:
+        #         for line in f.readlines():
+        #             if line.startswith("#"):continue
+        #             if line.startswith("auth") and ("require" in line):
+        #                 so_file = re.findall(r"pam.*?\.so", line)
+        #                 if not len(so_file):
+        #                     self.suspicious_backdoor.append([pamfile,"pam ... so not find"])
+        #                 else:
+        #                     so_file_list.append(so_file[0])
+
+        # #
+        # # If .so file was found in the file
+        # #
+
+        end = len(self.suspicious_backdoor)
+        return True if end == ini else False
+
+    # By the way, I'm thinking of webshell these days. I am willing to write a simple one,
+    # Because it can be tricky if you want a good one. I read GScan, it use yaml and regex
+    # to do the check. I don't want use yaml for it's inconvenience of upgrading.
 
     def run(self):
         print(u'\n\033[1;33m%s\033[0m' % self.name)
@@ -473,14 +536,16 @@ class Backdoor_check:
         print(u'  %s%s' % (align("[7]LD_SO_PRELOAD check"),printf(self.ld_so_preload())))
         print(u'  %s%s' % (align("[8]Cron check"),printf(self.cron_check())))
         print(u'  %s%s' % (align("[9]SSH backdoor check"),printf(self.SSH_check())))
-        print(u'  %s%s' % (align("[10]SSH wrapper check"),printf(self.SSH_wrapper_check())))
-        print(u'  %s%s' % (align("[11]Inted check"), printf(self.inted_check())))
-        print(u'  %s%s' % (align("[12]Xinted check"),printf(self.xinetd_check())))
-        print(u'  %s%s' % (align("[13]Setuid check"),printf(self.setuid_check())))
-        print(u'  %s%s' % (align("[14]Startup check"),printf(self.startup_check())))
-        print(u'  %s%s' % (align("[15]Alias check"),printf(self.alias_check())))
-        print(u'  %s%s' % (align("[16]Openssh check"),printf(self.openssh_check())))
-        print(u'  %s%s' % (align("[17]Fstab check"),printf(self.fstab_check())))
-        print(u'  %s%s' % (align("[18]Setgid check"),printf(self.setgid_check())))
+        print(u'  %s%s' % (align("[10]SSH_softlink check"),printf(self.SSH_softlink_check())))
+        print(u'  %s%s' % (align("[11]SSH wrapper check"),printf(self.SSH_wrapper_check())))
+        print(u'  %s%s' % (align("[12]Inted check"), printf(self.inted_check())))
+        print(u'  %s%s' % (align("[13]Xinted check"),printf(self.xinetd_check())))
+        print(u'  %s%s' % (align("[14]Setuid check"),printf(self.setuid_check())))
+        print(u'  %s%s' % (align("[15]Startup check"),printf(self.startup_check())))
+        print(u'  %s%s' % (align("[16]Alias check"),printf(self.alias_check())))
+        print(u'  %s%s' % (align("[17]Openssh check"),printf(self.openssh_check())))
+        print(u'  %s%s' % (align("[18]Fstab check"),printf(self.fstab_check())))
+        print(u'  %s%s' % (align("[19]Setgid check"),printf(self.setgid_check())))
+        print(u'  %s%s' % (align("[20]PAM check"),printf(self.pam_check())))
         for detail in self.suspicious_backdoor:
             print(u'    [*]File:%s[*]Detail:%s'%(align(detail[0]),detail[1]))
