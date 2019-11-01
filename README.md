@@ -28,7 +28,8 @@ python3 main.py
 |Ld_so_preload|
 |Cron_check|
 |SSH Process|
-|SSH_wrapper|
+|SSH Softlink|
+|SSH wrapper|
 |Inted|
 |Xinetd|
 |Setuid|
@@ -94,8 +95,11 @@ python3 main.py
 
 - rebuild the framework(It's really silly...)
 - support ALL linux(Now only centos)
+- async maybe a better choice?
 
-## Some error
+## Update log
 
-- Script will be killed if too many files in your service(OOM killer)，I'll learn and try to figure out an better way.
-- Some module will warn you, but it's nothing(setuid check for example).
+- 2019-11-01:
+  - fix the softlink problem
+  - use singleton to minisize the memory(which I think resolve the problem of killing by OOM constantly).
+  - fix the logical of backdoor check
