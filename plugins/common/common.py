@@ -31,20 +31,26 @@ def align(string,width=30):
         return string+" "*(width-len(string))
     else:return string
 
-#THIS GOT PROBLEM
+# THIS GOT PROBLEM
+# Singleton to get memory used properly
 class allfile:
-    def __init__(self):
-        self.files = []
-        self.dirs = []
-    def getallfile(self):
+    _instance = None
+    _status = False
+    dir_list = []
+    file_list = []
+
+    def __new__(cls):
+        if not cls._instance:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+    @classmethod
+    def getallfile(cls):
         for dirpath,dirs,files in os.walk("/"):
             for name in files:
-                self.files.append(os.path.join(dirpath,name))
+                cls.file_list.append(os.path.join(dirpath,name))
             for name in dirs:
-                self.dirs.append(os.path.join(dirpath, name))
-
-    def run(self):
-        self.getallfile()
-
+                cls.dir_list.append(os.path.join(dirpath, name))
+        cls._status = True
 
 

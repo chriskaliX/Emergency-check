@@ -32,7 +32,7 @@ def check_all():
     check(Proc_check)
 
 start = time.time()
-t=threading.Thread(target=init.init)
+t=threading.Thread(target=init.getallfile)
 t.start()
 
 begin()

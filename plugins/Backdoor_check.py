@@ -217,9 +217,8 @@ class Backdoor_check:
             return True
     
     def SSH_softlink(self):
-        ini = len(self.suspicious_backdoor)
         try:
-            if os.path.islink("/usr/sbin/sshd"):
+            if not os.path.islink("/usr/sbin/sshd"):
                 return True
             else:
                 self.suspicious_backdoor.append(["/usr/sbin/sshd","softlink"])
@@ -270,14 +269,21 @@ class Backdoor_check:
         except:
             return True
 
-    ##Run_all_the_file,one time
-    ##int(str(pri))....can be better
-    ##setuid and check can be together
+    ## Run_all_the_file,one time
+    ## int(str(pri))....can be better
+    ## setuid and check can be together
+
+    #
+    # See, I think I found a big problem.
+    # I should never run check all file before it's done.
+    #
+
     def setuid_check(self):
         plat = platform.platform()
-
         under_check = []
-        while ((init.file_list == []) or (init.dir_list == [])):
+
+        # Try to find out more elegant way.
+        while not init._status:
             time.sleep(0.1)
         for sub_file in init.file_list:
             try:
@@ -293,7 +299,7 @@ class Backdoor_check:
 
         sus_list = ['pam_timestamp_check', 'unix_chkpwd', 'ping', 'mount', 'bin/su', 'pt_chown', 'ssh-keysign', 'at', 'passwd', 'chsh', 'crontab', 'chfn', 'usernetctl', 'staprun','newgrp','ksu',
                     'chage', 'dhcp', 'helper', 'pkexec', '/usr/bin/top', 'Xorg', 'nvidia-modprobe', 'quota', 'login', 'security_authtrampoline', 'authopen', 'traceroute6', 'traceroute', '/usr/bin/ps',
-                    'mail', 'exim', 'smtp', 'rcp', 'rsh', 'vmware-user', 'pppd', 'runq', 'ntfs-3g', 'newaliases', 'sg', 'bwrap', 'kismet_capture', 'chrome-sandbox', 'dmcrypt-get-device']
+                    'mail', 'exim', 'smtp', 'rcp', 'rsh', 'vmware-user', 'pppd', 'runq', 'ntfs-3g', 'newaliases', 'sg', 'bwrap', 'kismet_capture', 'chrome-sandbox', 'dmcrypt-get-device', 'kismet_cap_']
         if "Ubuntu" in plat:
             sus_list.extend(["ubuntu-core-launcher","/snap/core", "snap-confine"])
         result = under_check[:]
@@ -308,6 +314,8 @@ class Backdoor_check:
     
     def chmod_777_check(self):
         ini = len(self.suspicious_backdoor)
+        while not init._status:
+            time.sleep(0.1)
         for list1 in [init.file_list,init.dir_list]:
             for sub_file in list1:
                 try:
@@ -470,8 +478,8 @@ class Backdoor_check:
         end = len(self.suspicious_backdoor)
         return True if end == ini else False
 
-    # PAM check(not good)
-    def pam(self):
+    # PAM check(not good and unfinished)
+    def pam_check(self):
         ini = len(self.suspicious_backdoor)
 
         # Check the /etc/ssh/sshd_config file, if PAM is enabled, it should be suspicious
@@ -536,7 +544,7 @@ class Backdoor_check:
         print(u'  %s%s' % (align("[7]LD_SO_PRELOAD check"),printf(self.ld_so_preload())))
         print(u'  %s%s' % (align("[8]Cron check"),printf(self.cron_check())))
         print(u'  %s%s' % (align("[9]SSH backdoor check"),printf(self.SSH_check())))
-        print(u'  %s%s' % (align("[10]SSH_softlink check"),printf(self.SSH_softlink_check())))
+        print(u'  %s%s' % (align("[10]SSH_softlink check"),printf(self.SSH_softlink())))
         print(u'  %s%s' % (align("[11]SSH wrapper check"),printf(self.SSH_wrapper_check())))
         print(u'  %s%s' % (align("[12]Inted check"), printf(self.inted_check())))
         print(u'  %s%s' % (align("[13]Xinted check"),printf(self.xinetd_check())))
