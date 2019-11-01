@@ -101,5 +101,4 @@ python3 main.py
 
 - 2019-11-01:
   - fix the softlink problem
-  - use singleton to minisize the memory(which I think resolve the problem of killing by OOM constantly).
   - fix the logical of backdoor check
