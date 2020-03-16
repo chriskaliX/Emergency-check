@@ -162,6 +162,18 @@ class Backdoor_check:
             return True
     
     # Check counts of ssh connection (which I think is coincide?)
+    #
+    # 2020-03-16
+    # A kind of ssh login way: `ssh -T username@host /bin/bash -i`
+    # And use last, who, w can't detect the ssh login.
+    # Why?
+    #   -T means no terminal, it interacts with bash.
+    # How to detect?
+    #   For the ssh check part, it really can not detect this login.
+    #   The shell detect part, however, which go through all the file,
+    #   can detect the `/bin/bash -i` command. So basically it can be
+    #   checked by my script.
+    #
     def SSH_check(self):
         ini = len(self.suspicious_backdoor)
         def trans(content):
@@ -371,8 +383,17 @@ class Backdoor_check:
                 return True
             except:
                 return True
+        
+        # Datetime: 2020-03-13
+        # Diffrence between /etc/profile & /etc/profile.d/
+        # 
+        # /etc/profile is called only when login shell launchs
+        # /etc/profile.d/ is mainly for other application
+        # 
+        # So i reckon those should be detected as well
+
         files = ['/root/.bashrc', '/root/.bash_profile',
-                 '/etc/bashrc', '/etc/profile']
+                 '/etc/bashrc', '/etc/profile','/etc/profile.d/']
         try:
             ini = len(self.suspicious_backdoor)
             for dirs in os.listdir("/home/"):
@@ -388,6 +409,12 @@ class Backdoor_check:
                         self.suspicious_backdoor.append([path,"Alias"])
             for sub_file in files:
                 if os.path.exists(sub_file):
+                    if os.path.isdir(sub_file):
+                        file_list = [os.path.join(sub_file,filename) for filename in sub_file]
+                        for filename in file_list:
+                            result = alias_file_check(filename)
+                            if not result:
+                                self.suspicious_backdoor.append([path, "Alias"])
                     result = alias_file_check(sub_file)
                     if not result:
                         self.suspicious_backdoor.append([path,"Alias"])

@@ -1,3 +1,6 @@
+<!--
+ * @Author: chriskali
+ -->
 # Emergency Alert Script
 
 > 这是一款linux下的简单应急响应脚本。这是我在学习GScan之后的学习成果，GScan是一个不论在学习和应急响应上都很好的工具。
@@ -79,26 +82,19 @@ python3 main.py
 |authorized_check|
 |permission_check|
 
-## Purpose
-
-- learn something of emergency alert
-- practice my python(STILL shit though)
-- learn more about Linux
-
 ## Difference
 
 - Pure python3,No Linux command used
 - some differences between file check
 - delete some plugins
 
-## PLAN
-
-- rebuild the framework(It's really silly...)
-- support ALL linux(Now only centos)
-- async maybe a better choice?
-
 ## Update log
 
 - 2019-11-01:
   - fix the softlink problem
   - fix the logical of backdoor check
+- 2020-03-13:
+
+## Others & Reference
+
+- https://xz.aliyun.com/t/7338

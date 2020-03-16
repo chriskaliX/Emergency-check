@@ -1,3 +1,6 @@
+'''
+@Author: chriskali
+'''
 import os,stat
 from plugins.common.common import getfile,strings
 class check_all:
@@ -6,6 +9,7 @@ class check_all:
 
     @staticmethod
     def check_shell(content):
+        '''check suspicious shell'''
         try:
             if 'docker' in content:
                 return False
@@ -21,12 +25,16 @@ class check_all:
             elif ('exec ' in content) and (('socket.' in content) or (".decode('base64')" in content)):
                 return content
             elif ('socket.socket' in content):
-                return content                                                                        
+                return content
+            #
+            # Ruby added
+            #
             elif (('wget ' in content) or ('curl ' in content)) and (
                     (' -O ' in content) or (' -s ' in content)) and (
                     ' http' in content) and (
-                    ('php ' in content) or ('perl' in content) or ('python ' in content) or ('sh ' in content) or (
-                    'bash ' in content)):
+                    ('php ' in content) or ('perl' in content) or 
+                    ('ruby ' in content) or ('python ' in content) or 
+                    ('sh ' in content) or ('bash ' in content)):
                 return content
             return False
         except:
