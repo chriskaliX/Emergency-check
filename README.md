@@ -17,6 +17,10 @@ python3 main.py
 
 (ONLY python>3.6 supported)
 
+## Run pic
+
+![image text](https://github.com/chriskaliX/Emergency-check/imgs/showpic.png)
+
 ## Check list
 
 > Backdoor
@@ -93,7 +97,9 @@ python3 main.py
 - 2019-11-01:
   - fix the softlink problem
   - fix the logical of backdoor check
-- 2020-03-13:
+- 2020-03-16:
+  - some explations
+  - add ruby detect in analysis file
 
 ## Others & Reference
 
