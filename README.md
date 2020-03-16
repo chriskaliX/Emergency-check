@@ -19,7 +19,7 @@ python3 main.py
 
 ## Run pic
 
-![image text](https://github.com/chriskaliX/Emergency-check/imgs/showpic.png)
+![image](https://github.com/chriskaliX/Emergency-check/imgs/showpic.png)
 
 ## Check list
 
